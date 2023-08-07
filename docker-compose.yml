@@ -1,0 +1,14 @@
+version: '3.7'
+
+
+services:
+  front-end:
+    image: front-end:0.8
+    ports:
+      - "80:80"
+
+  back-end:
+    image: back-end:0.2
+    hostname: back-end
+    ports:
+      - "5000:5000"

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const App = () => {
   const [sessionId, setSessionId] = useState('');
@@ -6,14 +7,12 @@ const App = () => {
 
   useEffect(() => {
     // Fetch the session ID and IP address from the backend when the component mounts
-    fetch('http://back-end/api/session')
-      .then((response) => response.json())
-      .then((data) => setSessionId(data.sessionId))
+    axios.get('http://192.168.0.8:5000/api/session')
+      .then((response) => setSessionId(response.data.sessionId))
       .catch((error) => console.error('Error fetching session ID:', error));
 
-    fetch('http://back-end/api/ip')
-      .then((response) => response.json())
-      .then((data) => setIpAddress(data.ip))
+    axios.get('http://192.168.0.8:5000/api/ip')
+      .then((response) => setIpAddress(response.data.ip))
       .catch((error) => console.error('Error fetching IP address:', error));
   }, []);
 
