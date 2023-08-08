@@ -1,26 +1,60 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import './styles.css'; // Import the CSS file
 
 const App = () => {
-  const [sessionId, setSessionId] = useState('');
-  const [ipAddress, setIpAddress] = useState('');
+  const [clientSessionId, setClientSessionId] = useState('');
+  const [clientIp, setClientIp] = useState('');
+  const [frontendIp, setFrontendIp] = useState('');
+  const [backendIp, setBackendIp] = useState('');
+  const [backendSessionId, setBackendSessionId] = useState('');
 
   useEffect(() => {
-    // Fetch the session ID and IP address from the backend when the component mounts
-    axios.get('http://192.168.0.8:5000/api/session')
-      .then((response) => setSessionId(response.data.sessionId))
-      .catch((error) => console.error('Error fetching session ID:', error));
+    const storedClientSessionId = sessionStorage.getItem('clientSessionId');
 
-    axios.get('http://192.168.0.8:5000/api/ip')
-      .then((response) => setIpAddress(response.data.ip))
-      .catch((error) => console.error('Error fetching IP address:', error));
+    axios.get('http://192.168.0.8:5000/api/data')
+      .then((response) => {
+        const data = response.data;
+        setClientIp(data.clientIp);
+        setFrontendIp(data.frontendIp);
+        setBackendIp(data.backendIp);
+        setBackendSessionId(data.backendSessionId);
+        setClientSessionId(storedClientSessionId || data.clientSessionId);
+
+        if (!storedClientSessionId) {
+          sessionStorage.setItem('clientSessionId', data.clientSessionId);
+        }
+      })
+      .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
   return (
-    <div>
-      <h1>My App</h1>
-      <h2>Session ID: {sessionId}</h2>
-      <h2>Client IP Address: {ipAddress}</h2>
+    <div className="container">
+      <h1>Docker Swarm Info</h1>
+      <div className="box">
+        <h2>Client Info</h2>
+        <div>
+          <strong>Client IP Address:</strong> {clientIp}
+        </div>
+        <div>
+          <strong>Client Session ID:</strong> {clientSessionId}
+        </div>
+      </div>
+
+      <div className="box">
+        <h2>Frontend IP Address</h2>
+        {frontendIp}
+      </div>
+      
+      <div className="box">
+        <h2>Backend Info</h2>
+        <div>
+          <strong>Backend IP Address:</strong> {backendIp}
+        </div>
+        <div>
+          <strong>Backend Session ID:</strong> {backendSessionId}
+        </div>
+      </div>
     </div>
   );
 };

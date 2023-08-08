@@ -3,12 +3,14 @@ version: '3.7'
 
 services:
   front-end:
-    image: front-end:0.8
+    build: ./front-end/front-end
+    # image: front-end:0.9
     ports:
       - "80:80"
 
   back-end:
-    image: back-end:0.2
+    build: ./back-end
+    # image: back-end:0.3
     hostname: back-end
     ports:
       - "5000:5000"

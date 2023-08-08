@@ -1,25 +1,47 @@
 const express = require('express');
-const cors = require('cors'); // Import the cors package
+const cors = require('cors');
 const app = express();
 const port = 5000;
 const uuid = require('uuid');
+const session = require('express-session');
+const MemoryStore = require('memorystore')(session);
 
-// Use the cors middleware for all routes
 app.use(cors());
 
-app.get('/api/session', (req, res) => {
-  // Generate a new session ID using UUID
-  const sessionId = uuid.v4();
-  // Store the session ID in a cookie on the client's browser
-  res.cookie('sessionID', sessionId, { httpOnly: true });
-  // Send the session ID back to the client
-  res.json({ sessionId });
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: true,
+  store: new MemoryStore(),
+}));
+
+app.get('/api/data', (req, res) => {
+  // If clientSessionId doesn't exist in the session, generate a new one
+  if (!req.session.clientSessionId) {
+    req.session.clientSessionId = uuid.v4();
+  }
+  
+  const clientSessionId = req.session.clientSessionId;
+  const backendSessionId = req.session.serverSessionId || generateBackendSessionId(req);
+
+  const clientIpAddress = req.socket.remoteAddress;
+  const frontendIpAddress = req.socket.localAddress;
+  const backendIpAddress = req.socket.localAddress;
+
+  res.json({
+    clientSessionId: clientSessionId,
+    clientIp: clientIpAddress,
+    frontendIp: frontendIpAddress,
+    backendIp: backendIpAddress,
+    backendSessionId: backendSessionId,
+  });
 });
 
-app.get('/api/ip', (req, res) => {
-  const clientIpAddress = req.ip || req.connection.remoteAddress;
-  res.json({ ip: clientIpAddress });
-});
+function generateBackendSessionId(req) {
+  const sessionId = uuid.v4();
+  req.session.serverSessionId = sessionId;
+  return sessionId;
+}
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
