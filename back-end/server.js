@@ -12,7 +12,22 @@ app.use(session({
   secret: 'your-secret-key',
   resave: false,
   saveUninitialized: true,
-  store: new MemoryStore(),
+  store: new MemoryStore({
+    checkPeriod: 86400000 // prune expired entries every 24h
+  }),
+}))
+
+
+// This will be the unique backend session ID for all users
+const backendSessionId = uuid.v4();
+
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: true,
+  store: new MemoryStore({
+    checkPeriod: 86400000 // prune expired entries every 24h
+  }),
 }));
 
 app.get('/api/data', (req, res) => {
@@ -20,9 +35,8 @@ app.get('/api/data', (req, res) => {
   if (!req.session.clientSessionId) {
     req.session.clientSessionId = uuid.v4();
   }
-  
+
   const clientSessionId = req.session.clientSessionId;
-  const backendSessionId = req.session.serverSessionId || generateBackendSessionId(req);
 
   const clientIpAddress = req.socket.remoteAddress;
   const frontendIpAddress = req.socket.localAddress;
@@ -36,12 +50,6 @@ app.get('/api/data', (req, res) => {
     backendSessionId: backendSessionId,
   });
 });
-
-function generateBackendSessionId(req) {
-  const sessionId = uuid.v4();
-  req.session.serverSessionId = sessionId;
-  return sessionId;
-}
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

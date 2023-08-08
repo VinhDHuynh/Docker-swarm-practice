@@ -11,8 +11,10 @@ const App = () => {
 
   useEffect(() => {
     const storedClientSessionId = sessionStorage.getItem('clientSessionId');
-
-    axios.get('http://192.168.0.8:5000/api/data')
+  
+    axios.get('http://192.168.0.8:5000/api/data', {
+      data: { clientSessionId: storedClientSessionId }, // Include clientSessionId in the request payload
+    })
       .then((response) => {
         const data = response.data;
         setClientIp(data.clientIp);
@@ -20,13 +22,14 @@ const App = () => {
         setBackendIp(data.backendIp);
         setBackendSessionId(data.backendSessionId);
         setClientSessionId(storedClientSessionId || data.clientSessionId);
-
+  
         if (!storedClientSessionId) {
           sessionStorage.setItem('clientSessionId', data.clientSessionId);
         }
       })
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
+  
 
   return (
     <div className="container">
