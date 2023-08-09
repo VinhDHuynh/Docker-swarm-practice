@@ -36,13 +36,22 @@ app.get('/api/data', (req, res) => {
     req.session.clientSessionId = uuid.v4();
   }
 
+  
+
+  const forwardedForHeader = req.headers['x-forwarded-for'];
+  const forwardedIpAddresses = forwardedForHeader ? forwardedForHeader.split(',') : [];
+
+
+  const frontendIpAddress = req.ip;
+
   const clientSessionId = req.session.clientSessionId;
 
   const clientIpAddress = req.socket.remoteAddress;
-  const frontendIpAddress = req.socket.localAddress;
+
   const backendIpAddress = req.socket.localAddress;
 
   res.json({
+    forwardedIpAddresses: forwardedIpAddresses,
     clientSessionId: clientSessionId,
     clientIp: clientIpAddress,
     frontendIp: frontendIpAddress,

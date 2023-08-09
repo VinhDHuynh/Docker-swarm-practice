@@ -3,6 +3,7 @@ import axios from 'axios';
 import './styles.css'; // Import the CSS file
 
 const App = () => {
+  const [forwardedIpAddresses, setForwardedIpAddresses] = useState([]);
   const [clientSessionId, setClientSessionId] = useState('');
   const [clientIp, setClientIp] = useState('');
   const [frontendIp, setFrontendIp] = useState('');
@@ -14,9 +15,13 @@ const App = () => {
   
     axios.get('http://192.168.0.8:5000/api/data', {
       data: { clientSessionId: storedClientSessionId }, // Include clientSessionId in the request payload
+      headers: {
+        'X-Forwarded-For': "192.168.0.6", // Include the frontend IP address in the X-Forwarded-For header
+      },
     })
       .then((response) => {
         const data = response.data;
+        setForwardedIpAddresses(data.forwardedIpAddresses);  // Set forwarded IP addresses
         setClientIp(data.clientIp);
         setFrontendIp(data.frontendIp);
         setBackendIp(data.backendIp);
@@ -57,6 +62,13 @@ const App = () => {
         <div>
           <strong>Backend Session ID:</strong> {backendSessionId}
         </div>
+      </div>
+      
+      <div className="box">
+        <h2>Forwarded IP Addresses</h2>
+        {forwardedIpAddresses.map((address, index) => (
+          <div key={index}>{address}</div>
+        ))}
       </div>
     </div>
   );
