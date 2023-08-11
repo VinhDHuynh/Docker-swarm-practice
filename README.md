@@ -37,11 +37,6 @@ We need to fetch these images on our worker nodes. Run `sudo vi /etc/docker/daem
 
 Restart docker with `sudo systemctl restart docker` after updating the file.
 ```
-Then, to pull the images, run the following on your worker nodes:
-```
-docker pull <MANAGER-IP>:5001/front-end:1.0.2
-docker pull <MANAGER-IP>:5001/back-end:0.7
-```
 
 Finally, to start the stack and scale to 3 nodes, run the following command on your manager node in the top level directory:
 

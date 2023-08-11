@@ -1,0 +1,8 @@
+version: '3.7'
+
+services:
+  flask:
+    # build: ./flask
+    image: 192.168.0.8:5001/flask:0.2
+    ports:
+      - "5000:5000"

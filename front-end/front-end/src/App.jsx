@@ -9,11 +9,12 @@ const App = () => {
   const [frontendIp, setFrontendIp] = useState('');
   const [backendIp, setBackendIp] = useState('');
   const [backendSessionId, setBackendSessionId] = useState('');
+  const [backendHostIp, setBackendHostIp] = useState(''); // 1. Add the new state variable
 
   useEffect(() => {
     const storedClientSessionId = sessionStorage.getItem('clientSessionId');
   
-    axios.get('http://192.168.0.8:5000/api/data', {
+    axios.get('http://192.168.0.10:5000/api/data', {
       data: { clientSessionId: storedClientSessionId }, // Include clientSessionId in the request payload
       headers: {
         'X-Forwarded-For': "192.168.0.6", // Include the frontend IP address in the X-Forwarded-For header
@@ -27,6 +28,8 @@ const App = () => {
         setBackendIp(data.backendIp);
         setBackendSessionId(data.backendSessionId);
         setClientSessionId(storedClientSessionId || data.clientSessionId);
+        setBackendHostIp(data.backendHostIp); 
+
   
         if (!storedClientSessionId) {
           sessionStorage.setItem('clientSessionId', data.clientSessionId);
@@ -58,6 +61,9 @@ const App = () => {
         <h2>Backend Info</h2>
         <div>
           <strong>Backend IP Address:</strong> {backendIp}
+          <div>
+          <strong>Backend Host IP:</strong> {backendHostIp}
+        </div>
         </div>
         <div>
           <strong>Backend Session ID:</strong> {backendSessionId}

@@ -5,6 +5,8 @@ const port = 5000;
 const uuid = require('uuid');
 const session = require('express-session');
 const MemoryStore = require('memorystore')(session);
+const os = require('os');
+const networks = os.networkInterfaces();
 
 app.use(cors());
 
@@ -39,8 +41,13 @@ app.get('/api/data', (req, res) => {
   
 
   const forwardedForHeader = req.headers['x-forwarded-for'];
+
   const forwardedIpAddresses = forwardedForHeader ? forwardedForHeader.split(',') : [];
 
+  
+
+  const backendHostIpAddress = 'host.docker.internal';
+  console.log('Docker Host IP:', backendHostIpAddress);
 
   const frontendIpAddress = req.ip;
 
@@ -57,9 +64,8 @@ app.get('/api/data', (req, res) => {
     frontendIp: frontendIpAddress,
     backendIp: backendIpAddress,
     backendSessionId: backendSessionId,
+    hostendHostIpAddress: backendHostIpAddress,
   });
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+app.listen(port);
