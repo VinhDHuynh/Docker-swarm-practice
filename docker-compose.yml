@@ -12,5 +12,11 @@ services:
     build: ./back-end
     # image: 192.168.0.8:5001/back-end:1.0.5
     hostname: back-end
+    depends_on: 
+      - redis
     ports:
       - "5000:5000"
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
